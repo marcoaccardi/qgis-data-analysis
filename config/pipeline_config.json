@@ -1,0 +1,105 @@
+{
+  "general": {
+    "default_conda_env": "qgis_env",
+    "debug_mode": false
+  },
+  "directories": {
+    "input_dir": "dataset",
+    "output_dir": "output",
+    "temp_dir": "temp"
+  },
+  "preprocessing": {
+    "target_crs": "EPSG:32616",
+    "cell_size": 1.0,
+    "resample_method": "bilinear"
+  },
+  "feature_extraction": {
+    "basic_features": {
+      "slope": {
+        "algorithm": "native:slope",
+        "z_factor": 1.0
+      },
+      "roughness": {
+        "algorithm": "native:roughness",
+        "radius": 3
+      },
+      "curvature": {
+        "algorithm": "gdal:aspect",
+        "zevenbergen": true
+      },
+      "tpi": {
+        "algorithm": "native:tpitopographicpositionindex",
+        "radius": 3
+      },
+      "tri": {
+        "algorithm": "native:triterrainruggednessindex"
+      }
+    },
+    "saga_features": {
+      "twi": {
+        "algorithm": "saga:sagawetnessindex",
+        "saga_slope_method": 0
+      },
+      "convergence": {
+        "algorithm": "saga:convergenceindex",
+        "method": 0,
+        "neighbours": 1
+      },
+      "channel_network": {
+        "algorithm": "saga:channelnetwork",
+        "threshold": 100
+      },
+      "relative_height": {
+        "algorithm": "saga:relativeheightsandslope",
+        "min_height": 0.1
+      }
+    },
+    "spectral_features": {
+      "spectral_entropy": {
+        "window_size": 64,
+        "step_size": 32,
+        "fft_scale": 3
+      }
+    }
+  },
+  "zonal_statistics": {
+    "ridge_threshold": {
+      "tpi": 1.0,
+      "curvature": 0.0
+    },
+    "valley_threshold": {
+      "tpi": -1.0,
+      "curvature": 0.0
+    },
+    "statistics": ["mean", "median", "std", "min", "max", "range"]
+  },
+  "feature_masking": {
+    "steep_slope_mask": {
+      "slope_threshold": 45.0,
+      "roughness_threshold": 5.0
+    },
+    "entropy_mask": {
+      "entropy_threshold": 10.0
+    },
+    "flow_mask": {
+      "flow_threshold": 200.0
+    },
+    "wet_areas_mask": {
+      "twi_threshold": 10.0,
+      "curvature_threshold": 0.0
+    }
+  },
+  "polygonize": {
+    "simplify_tolerance": 1.0,
+    "min_area": 10.0,
+    "extract_centroids": true
+  },
+  "temporal_simulation": {
+    "window_size": 100,
+    "step_size": 10,
+    "statistics": ["mean", "std", "min", "max"],
+    "derivatives": true,
+    "sample_rate": 44100,
+    "duration": 30
+  }
+}
