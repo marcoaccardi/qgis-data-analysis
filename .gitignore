@@ -3,3 +3,4 @@
 /dataset
 /logs
 **/__pycache__
+/raster_to_feature_csv

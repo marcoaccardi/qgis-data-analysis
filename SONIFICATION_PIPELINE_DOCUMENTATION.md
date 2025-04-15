@@ -63,6 +63,167 @@ The pipeline follows a sequential processing workflow:
 - **Location**: `output/dataset_name/geojson/`
 - **Usage**: Vector representation of terrain features, potentially for path-based sonification
 
+## Output and Visualizations Directory File Types
+
+This section provides a detailed description of the file types and their purposes found in the `output` and `visualizations` directories of the QGIS Sonification Pipeline. This will help you understand what each file represents and how it is used in your workflow.
+
+## 1. Output Directory
+Each subdirectory in `output/` corresponds to a specific project or area. Inside each, you will find the following types of files and folders:
+
+### Raster Data Files
+- `.tif` : GeoTIFF raster files, typically representing elevation data (DEM) or derived spatial features (e.g., slope, aspect, roughness).
+- `.tif.aux.xml` : Auxiliary metadata for the corresponding `.tif` file, used by GIS software.
+
+### Vector Data Files
+- `.shp`, `.shx`, `.dbf`, `.prj` : Shapefile components for vector data such as masks (e.g., ridges, valleys, erosion risk zones). These files work together to define the geometry and attributes of spatial features.
+- `.cpg` : Specifies character encoding for shapefile attribute data.
+- `.geojson` : GeoJSON vector files representing spatial masks or features in a widely used web-friendly format.
+
+### Feature and Mask Data
+- `features/` : Contains derived raster features (e.g., aspect, slope, curvature) as `.tif` files.
+- `masks/` : Contains binary raster masks for specific zones (e.g., ridge, valley, erosion risk) as `.tif` files.
+- `sonification_masks/` : Cleaned and CSV-ready binary raster masks for sonification, as `.tif` files.
+- `sonification_rasters/` : Cleaned and CSV-ready derived raster features for sonification, as `.tif` files and corresponding CSVs.
+
+### Statistical and Time Series Data
+- `all_zones_statistics.csv` : Summary statistics for all zones.
+- `combined_time_series.csv` : Aggregated time series data for all features/zones.
+- `time_series/` : Contains per-feature time series CSVs (e.g., `slope_time_series.csv`).
+- `stats/` : Contains per-feature statistics in both CSV and JSON formats (e.g., `slope_stats.csv`, `slope_stats.json`).
+- `statistics/` : May contain further breakdowns by zone (e.g., `erosion_risk/`, `ridge/`, `valley/`).
+
+### Metadata
+- `feature_list.json` : List and descriptions of derived features.
+- `mask_metadata.json` : Metadata about mask generation and properties.
+- `temporal_simulation_metadata.json` : Details about temporal simulation parameters and results.
+- `vector_metadata.json` : Metadata about vector data sources and attributes.
+- `zonal_statistics_metadata.json` : Metadata about zonal statistics calculations.
+
+### Other
+- `path_points.csv` : CSV containing the coordinates and order of path points, likely for sonification or analysis.
+
+## 2. Visualizations Directory
+Each subdirectory or file in `visualizations/` corresponds to a specific project/area. Inside, you will find:
+
+### Visualization Images
+- `_hillshade.png` : Hillshade visualization of the DEM, enhancing terrain relief for visual interpretation.
+- `_relief.png` : Colored relief map, often combining elevation and slope for visual effect.
+- `_standard.png` : Standard visualization of the DEM or feature raster, typically using a color ramp.
+- `.aux.xml` : Auxiliary metadata for the corresponding PNG file.
+
+### Directory Structure
+- Each visualization type (hillshade, relief, standard) is stored as a PNG image inside a subdirectory named after the project/area.
+
+---
+
+## Feature Descriptions
+
+The following features are derived from the terrain data and are used throughout the pipeline for analysis and sonification:
+
+- **Slope**: The steepness or degree of incline of the terrain, typically measured in degrees or percent. Indicates how rapidly elevation changes over a given distance.
+- **Aspect**: The compass direction that a slope faces, measured in degrees from north. Useful for analyzing sunlight exposure, wind direction, and ecological patterns.
+- **Roughness**: A measure of the variability in elevation within a local neighborhood, reflecting the ruggedness or smoothness of the terrain.
+- **TPI (Topographic Position Index)**: The difference between a cell’s elevation and the average elevation of its surrounding neighborhood. Used to classify landscape positions such as ridges, valleys, and flats.
+- **TRI (Terrain Ruggedness Index)**: Quantifies the total elevation change between a cell and its neighbors, providing a measure of terrain heterogeneity.
+- **Curvature**: The rate of change of slope, indicating whether a surface is convex (e.g., ridge) or concave (e.g., valley). Useful for hydrological and geomorphological analysis.
+- **Planform Curvature**: The curvature of contour lines (perpendicular to the slope direction), describing the convergence or divergence of flow across the surface.
+
+---
+
+## Summary Table
+| File/Folder                   | Type           | Purpose/Description                                                  |
+|------------------------------|----------------|---------------------------------------------------------------------|
+| *.tif                        | Raster         | Elevation or derived feature raster data (GeoTIFF)                  |
+| *.tif.aux.xml                | Metadata       | Auxiliary metadata for raster files                                 |
+| *.shp, *.shx, *.dbf, *.prj   | Vector         | Shapefile components for masks/zones                                |
+| *.cpg                        | Metadata       | Encoding for shapefile attributes                                   |
+| *.geojson                    | Vector         | GeoJSON format masks/zones                                          |
+| features/                    | Folder         | Derived raster features (aspect, slope, etc.)                       |
+| masks/                       | Folder         | Binary raster masks for spatial zones                               |
+| sonification_masks/          | Folder         | Cleaned/CSV-ready masks for sonification                            |
+| sonification_rasters/        | Folder         | Cleaned/CSV-ready features for sonification                         |
+| all_zones_statistics.csv     | Table (CSV)    | Summary statistics for all zones                                    |
+| combined_time_series.csv     | Table (CSV)    | Combined time series for all features/zones                         |
+| time_series/                 | Folder         | Per-feature time series CSVs                                        |
+| stats/                       | Folder         | Per-feature statistics (CSV/JSON)                                   |
+| statistics/                  | Folder         | Per-zone statistics breakdown                                       |
+| feature_list.json            | Metadata       | List and descriptions of features                                   |
+| mask_metadata.json           | Metadata       | Metadata about masks                                                |
+| temporal_simulation_metadata.json | Metadata   | Temporal simulation details                                         |
+| vector_metadata.json         | Metadata       | Metadata about vector data                                          |
+| zonal_statistics_metadata.json | Metadata      | Metadata about zonal statistics                                     |
+| path_points.csv              | Table (CSV)    | Ordered path points for analysis/sonification                       |
+| *_hillshade.png              | Image          | Hillshade visualization of DEM                                      |
+| *_relief.png                 | Image          | Colored relief visualization                                        |
+| *_standard.png               | Image          | Standard DEM/feature visualization                                  |
+| *.aux.xml (PNG)              | Metadata       | Auxiliary metadata for visualization images                         |
+
+---
+
+## CSV Processing for Sonification
+
+The pipeline now includes specialized scripts to process CSV data for synchronized sonification with image visualizations:
+
+### 1. Column-wise Sorting (`reorder_csv_for_column_scan.py`)
+
+This script re-orders the combined time series data to follow a column-by-column pattern:
+
+- **Purpose**: Re-organizes points by X coordinate (primary) and Y coordinate (secondary)
+- **Usage**: Useful when reading data sequentially that corresponds to a column-by-column scan of an image
+- **Output**: `combined_time_series_columnwise.csv`
+
+### 2. Full Grid Generation (`create_full_grid_csv.py`)
+
+Creates a comprehensive grid CSV with one row per pixel in the visualization image:
+
+- **Purpose**: Generates a complete mapping between image pixels and data values
+- **Process**: Maps between pixel coordinates and world coordinates, filling gaps with NaN
+- **Output**: `combined_time_series_fullgrid.csv` with columns for `pixel_x`, `pixel_y`, `world_x`, `world_y` and all feature values
+- **Size**: One row per pixel (e.g., 896×768 = 688,128 rows for S0603-M3-Rose_Garden)
+
+### 3. Column Aggregation (`create_column_aggregated_csv.py`)
+
+Condenses all data in each image column to a single row for left-to-right scanning:
+
+- **Purpose**: Creates a simplified representation with one data point per x-position 
+- **Process**: For each x-position (column) in the image, calculates the median value of each feature across all y-positions
+- **Output**: `combined_time_series_columnaggregated.csv` with columns for `pixel_x`, `world_x` and all feature values
+- **Size**: One row per x-position (equal to image width)
+
+### Usage for Sonification
+
+These CSV processing options support different sonification approaches:
+
+1. **Image-Synchronized Scanning**:
+   - For detailed pixel-by-pixel sonification: Use `combined_time_series_fullgrid.csv`
+   - For column-by-column sonification: Use `combined_time_series_columnaggregated.csv`
+
+2. **Mapping Workflow**:
+   - Match CSV row index to pixel position when scanning visualization images
+   - For missing data (NaN values), use silence or a neutral sound
+
+3. **Max/MSP Integration**:
+   - Pre-load the appropriate CSV file
+   - Read rows sequentially to match left-to-right image scanning
+   - Map feature values (tri, aspect, slope, etc.) to sonic parameters
+
+These tools ensure perfect synchronization between visual and sonic representations of the terrain data, regardless of dataset size or resolution.
+
+---
+
+## Visualization Types Explained
+
+- **Hillshade**:  
+  A grayscale image simulating how the terrain would look with sunlight shining from a particular direction and elevation. It highlights slopes and landforms by casting simulated shadows, making terrain features visually prominent.
+
+- **Relief**:  
+  Typically a colored image that combines elevation and slope to create a visually appealing map. It often uses color ramps and shading to enhance the perception of topography, making it easier to distinguish valleys, ridges, and flat areas.
+
+- **Standard**:  
+  Usually a direct visualization of the raw DEM (Digital Elevation Model) or a specific feature (like slope or aspect), mapped to a color ramp. It shows the actual data values as colors, without simulated lighting or extra enhancement.
+
+---
+
 ## Python Scripts
 
 ### 1. Data Preparation (`01_load_and_prepare_raster.py`)
